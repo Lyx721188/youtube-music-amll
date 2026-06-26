@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+extension/dist/
+extension/test/
+
+# AMLL monorepo (third-party source, build artifacts already copied to extension/src/lib/)
+applemusic-like-lyrics/
+
+# Unrelated saved web pages
+YouTube Music.html
+YouTube Music_files/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
