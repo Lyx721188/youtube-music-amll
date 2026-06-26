@@ -27,3 +27,6 @@ Desktop.ini
 # Logs
 *.log
 npm-debug.log*
+
+# Release zips
+*.zip

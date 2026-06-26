@@ -7,7 +7,7 @@ const watch = process.argv.includes("--watch");
 const stubsPath = resolve(__dirname, "src/stubs.js");
 
 const opts = {
-	entryPoints: ["src/content.ts", "src/background.ts", "test/test-entry.ts"],
+	entryPoints: ["src/content.ts", "src/background.ts"],
 	bundle: true,
 	format: "iife",
 	platform: "browser",
