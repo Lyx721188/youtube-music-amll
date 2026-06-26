@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>AMLL ESM 直接测试</title>
+<style>
+	html,body{margin:0;height:100%;background:#111;color:#fff;font-family:sans-serif}
+	#info{position:fixed;top:8px;left:12px;z-index:10;font-size:13px;opacity:.7}
+	#err{position:fixed;bottom:8px;left:12px;z-index:10;font-size:12px;color:#f66;max-width:90%;white-space:pre-wrap}
+	#container{height:100vh;width:100vw}
+</style>
+</head>
+<body>
+<div id="info">AMLL ESM 直接测试</div>
+<div id="err"></div>
+<div id="container"></div>
+<script type="module">
+	window.addEventListener("error", e => {
+		document.getElementById("err").textContent += "\\nERROR: " + e.message + " @ " + e.filename + ":" + e.lineno;
+	});
+	window.addEventListener("unhandledrejection", e => {
+		document.getElementById("err").textContent += "\\nREJECT: " + e.reason;
+	});
+	try {
+		const { DomLyricPlayer } = await import("../src/lib/amll-core.mjs");
+		const { parseTTML } = await import("../src/lib/amll-ttml.mjs");
+		document.getElementById("info").textContent += " | loaded: " + typeof DomLyricPlayer;
+
+		const css = await fetch("../src/lib/amll-core.css").then(r => r.text());
+		const style = document.createElement("style");
+		style.textContent = css;
+		document.head.appendChild(style);
+
+		const player = new DomLyricPlayer();
+		player.setEnableSpring(true);
+		player.setEnableScale(true);
+		player.setEnableBlur(true);
+		player.setAlignAnchor("center");
+		document.getElementById("container").appendChild(player.getElement());
+		document.getElementById("info").textContent += " | element appended";
+
+		function buildLine(text, start, dur) {
+			let t = start;
+			const words = text.split("|").map(seg => {
+				const [word, d] = seg.split(",");
+				const end = t + Number(d);
+				const w = { word, startTime: t, endTime: end };
+				t = end;
+				return w;
+			});
+			return { startTime: start, endTime: t + 2000, translatedLyric: "", romanLyric: "", isBG: false, isDuet: false, words };
+		}
+		const lines = [
+			buildLine("Apple ,750|Music ,500|Like ,500|Ly,400|ri,500|cs ,250", 1000),
+			buildLine("BG ,750|Lyrics ,1000", 2000),
+			buildLine("Next ,1000|Lyrics,1000", 2500),
+			buildLine("This ,400|is ,400|a ,400|demo ,500|of ,400|AMLL ,600|scrolling ,700|lyrics.,800", 6000),
+			buildLine("Enjoy,500|the,500|smooth,600|spring,600|animations!,900", 11000),
+		];
+		player.setLyricLines(lines);
+		document.getElementById("info").textContent += " | lines set: " + lines.length;
+
+		let last = 0, startTs = 0;
+		function loop(ts) {
+			if (!last) { last = ts; startTs = ts; }
+			const elapsed = (ts - startTs) % 16000;
+			player.setCurrentTime(elapsed);
+			player.update(ts - last);
+			last = ts;
+			requestAnimationFrame(loop);
+		}
+		requestAnimationFrame(loop);
+	} catch(e) {
+		document.getElementById("err").textContent += "\\nCATCH: " + e.stack;
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "AMLL for YouTube Music",
+  "version": "0.1.0",
+  "description": "在 YouTube Music 歌词页面中享受 AMLL 滚动高质量歌词展示",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://music.youtube.com/*",
+    "https://amll-ttml-db.stevexmh.net/*",
+    "https://amlldb.bikonoo.com/*",
+    "https://raw.githubusercontent.com/*",
+    "https://s1.hdslb.com/*",
+    "https://lrclib.net/*",
+    "https://itunes.apple.com/*",
+    "https://api.music.apple.com/*",
+    "https://music.163.com/*"
+  ],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://music.youtube.com/*"],
+      "js": ["dist/content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["dist/content.js.map", "dist/background.js.map"],
+      "matches": ["https://music.youtube.com/*"]
+    }
+  ]
+}
